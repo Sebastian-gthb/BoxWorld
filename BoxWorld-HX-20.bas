@@ -22,10 +22,10 @@
 210 IF A$="P" THEN A=6
 220 IF A$="O" THEN 699
 230 SOUND1,1 : GOTO 150
-239 REM          floor, target, box, box on target, wall
+239 REM          floor, target, box, box on target, wall     opt. LOCATE and PRINT line 140 and 240
 240 ON A(X2,Y2) GOSUB 300,300,310,320,810:LOCATE X1,Y1 : PRINT CHR$(154);
 250 GOTO 150
-300 RETURN
+300 LOCATEX1,Y1:PRINTCHR$(224+A(X1,Y1));:X1=X2:Y1=Y2:RETURN
 310 RETURN
 330 RETURN
 350 GOSUB800
