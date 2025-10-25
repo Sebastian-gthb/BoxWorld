@@ -1,21 +1,20 @@
 10 CLS:WIDTH20,16:MEMSET&HB00:DEFINTA-Z:OPTIONBASE0:DIM A(16,16)
-20 LOCATE6,0:PRINT "Box World":PRINT" by Jeng-Long Jiang";:GOSUB800
-30 PRINT"    HX-20 Version":PRINT"by Sebastian Berger";:GOSUB800
-40 CLS:PRINT"Controls   ";CHR$(155);"W":PRINT"      <-A  ";CHR$(156);"S  D->"
-50 PRINT"??=scroll ";CHR$(155);CHR$(156):PRINT"  R=restart";:GOSUB800
+20 'LOCATE6,0:PRINT "Box World":PRINT" by Jeng-Long Jiang";:GOSUB800
+30 'PRINT"    HX-20 Version":PRINT"by Sebastian Berger";:GOSUB800
+40 'CLS:PRINT"Controls   ";CHR$(155);"W":PRINT"      <-A  ";CHR$(156);"S  D->"
+50 'PRINT"??=scroll ";CHR$(155);CHR$(156):PRINT"  R=restart";:GOSUB800
 60 POKE&H11E,&HA:POKE&H11F,&H40
 70 RESTORE900:FORI=&HA40 TO&HA6F:READJ$:J=VAL("&H"+J$):POKEI,J:NEXTI
-71 F=1
-75 REM FORI=0TO9:PRINTCHR$(224+I);:NEXTI
-76 REM Level * 10 + 900 = line with map data
-77 REM L=1:M=L*10+900:PRINTM:RESTORE M:READX+1:READY+1:READX1:READY1
+76 ' Level * 10 + 900 = line with map data
+77 ' L=1:M=L*10+900:PRINTM:RESTORE M:READX+1:READY+1:READX1:READY1
+78 ' L=level, C=move a box on a target flag (check completed), D=level done
 80 L=1
+99 C=0:D=1
 100 ON L GOSUB 700,701
 110 READX:READY:READX1:READY1:FORJ=0TO15:FORI=0TO15:A(I,J)=0:NEXT I,J
 120 CLS:FORJ=0TOY:LOCATE0,J:FORI=0TOX:READA(I,J):PRINTCHR$(224+A(I,J));:NEXT I,J
-140 LOCATE X1,Y1:PRINTCHR$(154);
+140 LOCATES0,Y1-1,0:LOCATE X1,Y1:PRINTCHR$(154);
 150 A$=INPUT$(1)
-159 REM               opt. can we remove the Y2=Y1 so the last 2 thinks dont change?
 160 IF A$="D" THEN X2=X1+1 : X3=X1+2 : Y2=Y1 : Y3=Y1:GOTO 240
 170 IF A$="A" THEN X2=X1-1 : X3=X1-2 : Y2=Y1 : Y3=Y1:GOTO 240
 180 IF A$="W" THEN Y2=Y1-1 : Y3=Y1-2 : X2=X1 : X3=X1:GOTO 240
@@ -24,26 +23,29 @@
 210 IF A$="P" THEN A=6
 220 IF A$="O" THEN 699
 230 SOUND1,1 : GOTO 150
-239 REM          floor, target, box, box on target, wall     opt. LOCATE and PRINT line 140 and 240
-240 ON A(X2,Y2) GOSUB 340,340,300,300,810
-250 GOTO 150
+239 '          floor, target, box, box on target, wall
+240 ON A(X2,Y2) GOSUB 330,330,300,300,810
+241 IF C=1 THEN C=0:D=2:FORJ=1TOY:FORI=1TOX:IFA(I,J)=3THEND=1:NEXTI,J   '<--- Fehler: level nach 1. box on target completet und nächstes level auch gleich
+250 ON D GOTO 150,350
 300 ON A(X3,Y3) GOSUB 320,320,810,810,810 : RETURN
 320 A(X3,Y3)=A(X3,Y3)+2 : A(X2,Y2)=A(X2,Y2)-2
+321 IF A(X3,Y3)=4 THEN C=1
+330 IF Y1<Y2 THEN LOCATES0,Y1-1,0
 340 LOCATEX1,Y1:PRINTCHR$(224+A(X1,Y1));
 341 LOCATEX2,Y2:PRINTCHR$(154);
 342 LOCATEX3,Y3:PRINTCHR$(224+A(X3,Y3));:X1=X2:Y1=Y2:RETURN
 350 GOSUB800
 360 L=L+1
 370 IF L<3 GOTO 100
-699 END
+699 CLS:END
 700 RESTORE 910:RETURN
 701 RESTORE 920:RETURN
 800 FORI=1TO28:J=I^2-56*(I^2\56):SOUNDJ,1:NEXTI:RETURN
 810 SOUND1,1:RETURN
 900 DATA 00,00,00,00,00,00,00,00,00,00,00,00,00,42,24,18,24,42,00,FF,F9,BD,9F,FF
 901 DATA 00,FF,87,C3,E1,FF,77,07,77,77,70,77,00,00,00,00,00,00,00,00,00,00,00,00
-908 REM X-Size-1 of map, Y-Site-1 of map, X-Start of player, Y-Start of player
-909 REM map data 1=floor 2=target 3=box 4=box on target 5=wall
+908 ' X-Size-1 of map, Y-Site-1 of map, X-Start of player, Y-Start of player
+909 ' map data 1=floor 2=target 3=box 4=box on target 5=wall
 910 DATA 7,7,4,4,0,0,5,5,5,0,0,0,0,0,5,2,5,0,0,0,0,0,5,1,5,5,5,5,5,5,5,3,1,3,2,5
 911 DATA 5,2,1,3,1,5,5,5,5,5,5,5,3,5,0,0,0,0,0,5,2,5,0,0,0,0,0,5,5,5,0,0
 920 DATA 15,15,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5
@@ -54,4 +56,4 @@
 925 DATA 5,1,1,1,1,3,1,1,3,1,1,1,1,1,1,5,5,1,1,1,3,1,1,1,1,1,1,1,1,1,1,5
 926 DATA 5,1,1,3,1,1,1,1,1,1,1,1,1,1,1,5,5,1,3,1,1,1,1,1,1,1,1,1,1,1,1,5
 927 DATA 5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
-999 REM last line not transfered
+999 ' last line not transfered
