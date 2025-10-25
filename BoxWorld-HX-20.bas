@@ -54,4 +54,5 @@
 926 DATA 5,1,1,3,1,1,1,1,1,1,1,1,1,1,1,5,5,1,3,1,1,1,1,1,1,1,1,1,1,1,1,5
 927 DATA 5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
 990 ' ToDo: empty buffer bevore starting new level; print map on printer
+991 '       level compession 
 999 ' last line not transfered
