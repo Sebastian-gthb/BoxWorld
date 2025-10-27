@@ -1,8 +1,8 @@
-10 CLS:WIDTH20,16:MEMSET&HB00:DEFINTA-Z:OPTIONBASE0:DIM A(16,16)
-20 LOCATE6,0:PRINT "Box World":PRINT" by Jeng-Long Jiang";:GOSUB800
-30 PRINT"    HX-20 Version":PRINT"by Sebastian Berger";:GOSUB800
-40 CLS:PRINT"Controls   ";CHR$(155);"W":PRINT"      <-A  ";CHR$(156);"S  D->"
-50 PRINT"R=restart  O=off";:GOSUB800
+10 CLS:WIDTH20,16:MEMSET&HB00:DEFINTA-Z:OPTIONBASE0:DIM A(16,16):DIM B(255,0)
+20 'LOCATE6,0:PRINT "Box World":PRINT" by Jeng-Long Jiang";:GOSUB800
+30 'PRINT"    HX-20 Version":PRINT"by Sebastian Berger";:GOSUB800
+40 'CLS:PRINT"Controls   ";CHR$(155);"W":PRINT"      <-A  ";CHR$(156);"S  D->"
+50 'PRINT"R=restart  O=off";:GOSUB800
 60 POKE&H11E,&HA:POKE&H11F,&H40
 70 RESTORE900:FORI=&HA40 TO&HA6F:READJ$:J=VAL("&H"+J$):POKEI,J:NEXTI
 76 ' Level * 10 + 900 = line with map data
@@ -11,8 +11,17 @@
 90 C=0 : CLS : INPUT "LEVEL  (1-2)";L : IF L<1 OR L>2 THEN SOUND1,1 : GOTO80
 100 ON L GOSUB 700,701
 110 READX:READY:READX1:READY1:FORJ=0TO15:FORI=0TO15:A(I,J)=0:NEXT I,J
-120 CLS:FORJ=0TOY:LOCATE0,J:FORI=0TOX:READA(I,J):IF A(I,J)=3 THEN C=C+1
-130 PRINTCHR$(224+A(I,J));:NEXT I,J
+111 B=(X+1)*(Y+1):Z=0
+112 READ D: IF D >11 THEN END
+113 IF D >9 THEN D=D-8 : E=5 : GOTO 117
+114 IF D >7 THEN D=D-6 : E=1 : GOTO 117
+115 IF D >5 THEN D=D-4 : E=0 : GOTO 117
+116 B(Z,0)=D : Z=Z+1 :GOTO 118
+117 FOR I=1 TO D : B(Z,0)=E : Z=Z+1 : NEXT I
+118 IF Z < B GOTO 112
+131 Z=0:A$=INKEY$:A$=INKEY$:A$=INKEY$:A$=INKEY$
+132 CLS:FOR J=0 TO Y :LOCATE 0,J :FOR I=0 TO X: A(I,J)=B(Z,0):Z=Z+1 :IF A(I,J)=3 THEN C=C+1
+133 PRINTCHR$(224+A(I,J));:NEXT I,J
 140 LOCATES0,Y1-1,0:LOCATE X1,Y1:PRINTCHR$(154);
 150 A$=INPUT$(1)
 160 IF A$="D" THEN X2=X1+1 : X3=X1+2 : Y2=Y1 : Y3=Y1:GOTO 240
@@ -41,18 +50,12 @@
 810 SOUND1,1:RETURN
 900 DATA 00,00,00,00,00,00,00,00,00,00,00,00,00,42,24,18,24,42,00,FF,F9,BD,9F,FF
 901 DATA 00,FF,87,C3,E1,FF,77,07,77,77,70,77,00,00,00,00,00,00,00,00,00,00,00,00
-908 ' X-Size-1 of map, Y-Site-1 of map, X-Start of player, Y-Start of player
-909 ' map data 1=floor 2=target 3=box 4=box on target 5=wall
-910 DATA 7,7,4,4,0,0,5,5,5,0,0,0,0,0,5,2,5,0,0,0,0,0,5,1,5,5,5,5,5,5,5,3,1,3,2,5
-911 DATA 5,2,1,3,1,5,5,5,5,5,5,5,3,5,0,0,0,0,0,5,2,5,0,0,0,0,0,5,5,5,0,0
-920 DATA 15,15,4,4,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5
-921 DATA 5,1,1,1,1,1,1,1,1,1,1,1,1,2,1,5,5,1,1,1,1,1,1,1,1,1,1,1,2,1,1,5
-922 DATA 5,1,1,1,1,1,1,1,1,1,1,2,1,1,1,5,5,1,1,1,1,1,1,1,1,1,2,1,1,1,1,5
-923 DATA 5,1,1,1,1,1,1,1,1,2,1,1,1,1,1,5,5,1,1,1,1,1,1,1,2,1,1,1,1,1,1,5
-924 DATA 5,1,1,1,1,1,1,5,1,1,1,1,1,1,1,5,5,1,1,1,1,1,3,1,1,1,1,1,1,1,1,5
-925 DATA 5,1,1,1,1,3,1,1,3,1,1,1,1,1,1,5,5,1,1,1,3,1,1,1,1,1,1,1,1,1,1,5
-926 DATA 5,1,1,3,1,1,1,1,1,1,1,1,1,1,1,5,5,1,3,1,1,1,1,1,1,1,1,1,1,1,1,5
-927 DATA 5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
-990 ' ToDo: empty buffer bevore starting new level; print map on printer
-991 '       level compession 
-999 ' last line not transfered
+907 ' X-Size-1 of map, Y-Site-1 of map, X-Start of player, Y-Start of player
+908 ' map data 0=outside 1=floor 2=target 3=box 4=box on target 5=wall
+909 ' 6,7=2x,3x Outside; 8,9=2x,3x floor; 10,11=2x,3x wall
+910 DATA 7,7,4,4,6,11,7,6,5,2,5,7,6,5,1,11,11,5,3,1,3,2,10,2,1,3,1,11,11,5,3,5,7,6,5,2,5,7,6,11,6
+920 DATA 15,15,4,4,11,11,11,11,11,10,9,9,9,9,8,10,9,9,9,9,2,1,10,9,9,9,8,2,8,10
+921 DATA 9,9,9,1,2,9,10,9,9,9,2,9,1,10,9,9,8,2,9,8,10,9,9,1,2,9,9,10,9,9,5,9,9
+922 DATA 1,10,9,8,3,9,9,8,10,9,1,3,8,3,9,9,10,9,3,9,9,9,1,10,8,3,9,9,9,8,10,1,3
+923 DATA 9,9,9,9,10,9,9,9,9,8,11,11,11,11,11,10
+990 ' ToDo: print map on printer
