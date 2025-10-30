@@ -43,4 +43,8 @@ DATA 7,7,4,4,6,11,7,6,5,2,5,7,6,5,1,11,11,5,3,1,3,2,10,2,1,3,1,11,11,5,3,5,7,6,5
   * 10 = 2x "5" wall
   * 11 = 3x "5" wall
 
- It must be a wall arround the playground! So the player should not go to x=0 or y=0 or x=15 or y=15.
+It must be a wall arround the playground! So the player should not go to x=0 or y=0 or x=15 or y=15.
+
+Variables they are used:
+* C = boxes not on target (0=level completed)
+* L = current level (1 to ...)
