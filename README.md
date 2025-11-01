@@ -42,6 +42,8 @@ DATA 7,7,4,4,6,11,7,6,5,2,5,7,6,5,1,11,11,5,3,1,3,2,10,2,1,3,1,11,11,5,3,5,7,6,5
   * 9 = 3x "1" floor
   * 10 = 2x "5" wall
   * 11 = 3x "5" wall
+  * ... 4x, 5x, 6x ...
+  * 25 = 17x "5" wall (and so on... walls can be compressed very long)
 
 It must be a wall arround the playground! So the player should not go to x=0 or y=0 or x=15 or y=15.
 
