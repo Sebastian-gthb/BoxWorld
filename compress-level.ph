@@ -53,10 +53,9 @@ print("Start is at x=",xstart," y=", ystart)
 lvldict = {"-":0,  "@":1, " ":1,  "+":2, ".":2,   "$":3,   "*":4,        "#":5}
 xf = 0
 yf = 0
-compobject = 0
 
 compobject = lvldict[lvllines[yf][xf]]           #read the first level object and translate in the object code for the HX-20 and save it in compobject
-#print("x=",xf," y=",yf, " obj=", lvlobject," cobj=",compobject)
+print("\nx=",xf," y=",yf, " obj=", lvlobject," cobj=",compobject,"   ", end='')
 xf += 1
 
 working = True
@@ -67,35 +66,35 @@ while(working):
 
 
     if lvlobject == 0:          #compress outside space
-        if compobject == 6:
-            combobject = 7
+        if  compobject == 6:
+            compobject = 7
             readnext = True
-        if compobject == 0:
+        if  compobject == 0:
             compobject = 6
             readnext = True
 
     if lvlobject == 1:          #compress floor
-        if compobject == 8:
+        if  compobject == 8:
             compobject = 9
             readnext = True
-        if compobject == 1:
+        if  compobject == 1:
             compobject = 8
             readnext = True
 
     if lvlobject == 5:          #compress wall
-        if compobject > 9 and compobject < 99:
+        if  compobject > 9 and compobject < 99:
             compobject += 1
             readnext = True
-        if compobject == 5:
+        if  compobject == 5:
             compobject = 10
             readnext = True
 
 
     if not readnext:
-        print(compobject, ",", end='')
+        print(compobject, end='')
         compobject=lvlobject
 
-    #print("x=",xf," y=",yf, " obj=", lvlobject," cobj=",compobject)
+    print("\nx=",xf," y=",yf, " obj=", lvlobject," cobj=",compobject,"   ", end='')
 
     xf += 1
     if xf == x:
