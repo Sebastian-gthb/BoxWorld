@@ -39,7 +39,7 @@ for yf in range (0, y):                     #print level map and find the start 
         try:
             lvlobject = lvllines[yf][xf]
             print(lvlobject, end='')
-            if (lvlobject == "@") or ("+"):
+            if lvlobject == "@" or lvlobject=="+":
                 xstart=xf
                 ystart=yf
         except IndexError:
@@ -48,6 +48,7 @@ for yf in range (0, y):                     #print level map and find the start 
     print("\n", end='')
 
 print("Start is at x=",xstart," y=", ystart)
+lvlcompdata = str(x-1) + ',' + str(y-1) + ',' + str(xstart) + ',' + str(ystart) + ','
 
 #         outside  +--floor----+  +--target---+   +box-+   box-on-taret   wall
 lvldict = {"-":0,  "@":1, " ":1,  "+":2, ".":2,   "$":3,   "*":4,        "#":5}
@@ -92,6 +93,7 @@ while(working):
 
     if not readnext:
         print(compobject, end='')
+        lvlcompdata += str(compobject) + ','
         compobject=lvlobject
 
     print("\nx=",xf," y=",yf, " obj=", lvlobject," cobj=",compobject,"   ", end='')
@@ -101,8 +103,14 @@ while(working):
         xf = 0
         yf += 1
     if yf == y:
-        print(compobject, ",", end='')
+        print(compobject, end='')
+        lvlcompdata += str(compobject) + ','
         working=False
     
-    
+
+print("\n")
+print("finished!---------------------------")
+print("compressed level data:")
+print("")
+print(lvlcompdata)
     
