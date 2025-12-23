@@ -60,7 +60,13 @@ compress-level.ph is a Python script to convert a *.xsb level file into the comp
 * "+" = start position on a target
 The source level data must filled completly with symbols (no carriage return after the last wall if there is more empty space).
 
-
+To add more levels you must:
+* add a line at the end of the file with "RESTORE <next lin number>:RETURN"
+* add some DATA lines with the level data
+* increment the max level number at 3 locations in the code
+  * line 70 in the display message
+  * line 70 in the check of the input
+  * line 400 in the check of the last level 
 
 Variables they are used in the game code:
 * C = boxes not on target (0=level completed)
