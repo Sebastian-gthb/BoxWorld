@@ -60,6 +60,18 @@ compress-level.ph is a Python script to convert a *.xsb level file into the comp
 * "+" = start position on a target
 The source level data must filled completly with symbols (no carriage return after the last wall if there is more empty space).
 
+Example of the first level:
+```
+--###---
+--#.#---
+--# ####
+###$ $.#
+#. $@###
+####$#--
+---#.#--
+---###--
+```
+
 To add more levels you must:
 * add a line at the end of the file with "RESTORE <next line number>:RETURN"
 * add some DATA lines with the level data (lines have a limit length at nearly 140 characters)
