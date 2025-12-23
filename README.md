@@ -61,8 +61,9 @@ compress-level.ph is a Python script to convert a *.xsb level file into the comp
 The source level data must filled completly with symbols (no carriage return after the last wall if there is more empty space).
 
 To add more levels you must:
-* add a line at the end of the file with "RESTORE <next lin number>:RETURN"
-* add some DATA lines with the level data
+* add a line at the end of the file with "RESTORE <next line number>:RETURN"
+* add some DATA lines with the level data (lines have a limit length at nearly 140 characters)
+* add the line number of the new RESTORE command in the GOSUB list at line 80 (mind the line length limit)
 * increment the max level number at 3 locations in the code
   * line 70 in the display message
   * line 70 in the check of the input
