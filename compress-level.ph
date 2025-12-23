@@ -104,7 +104,7 @@ while(working):
         yf += 1
     if yf == y:
         print(compobject, end='')
-        lvlcompdata += str(compobject) + ','
+        lvlcompdata += str(compobject)
         working=False
     
 
