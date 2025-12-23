@@ -75,11 +75,11 @@ Example of the first level:
 To add more levels you must:
 * add a line at the end of the file with "RESTORE <next line number>:RETURN"
 * add some DATA lines with the level data (lines have a limit length at nearly 140 characters)
-* add the line number of the new RESTORE command in the GOSUB list at line 80 (mind the line length limit)
+* add the line number of the new RESTORE command in the GOSUB list at line 110 or 120 (mind the line length limit)
 * increment the max level number at 3 locations in the code
   * line 70 in the display message
-  * line 70 in the check of the input
-  * line 400 in the check of the last level 
+  * line 80 or 90 in the check of the input
+  * line 420 in the check of the last level 
 
 Variables they are used in the game code:
 * C = boxes not on target (0=level completed)
