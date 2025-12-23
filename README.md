@@ -49,8 +49,8 @@ DATA 7,7,4,4,6,11,7,6,5,2,5,7,6,5,1,11,11,5,3,1,3,2,10,2,1,3,1,11,11,5,3,5,7,6,5
 It must be a wall arround the playground! So the player should not go to x=0 or y=0 or x=15 or y=15.
 
 
-compress-level.ph is a Python script to convert a *.xsb level file into the compressed data format for the HX-20 version of Box World. The sorce data level file ist fixed to "level.xsb" and must in the same directory as the Python script. The level file must contain only the level structure with a maximum size of 16x16. The syntax folows the standard with a smal enhancemend:
-* "-" = space outside the walls
+compress-level.ph is a Python script to convert a *.xsb level file into the compressed data format for the HX-20 version of Box World. The source data level file is fixed to "level.xsb" and must located in the same directory as the Python script. The level file must contain only the level structure with a maximum size of 16x16. The syntax follows the standard with a small enhancemend:
+* "-" = space outside the walls (this is a bit special)
 * " " = floor (space) 
 * "#" = wall
 * "$" = box
