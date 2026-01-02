@@ -24,7 +24,7 @@
 100 SOUND 1,1 : GOTO 70                                                 'is the input out of range the implemented levels play a sound and ask again
 
 110 ON L GOSUB 500,520,540,560,580,600,630,650,670,690,710,730,750,770,790,810,830,850,870,890,910,930,950,970,980,1010,1040,1070 : GOTO 130    'select the level data from the corresponding line and overjump the second GOSUB code
-120 M = L-28 : ON M GOSUB 1110,1130,1150,1170,1190                      'onfor higher level, use this GOSUB to select level data
+120 M = L-28 : ON M GOSUB 1110,1130,1150,1170,1190                      'for higher level, use this GOSUB to select level data
 
 130 READ X : READ Y : READ X1 : READ Y1 :                               'load the level header data (size and start position)
     FOR J=0 TO 15 : FOR I=0 TO 15 : A(I,J)=0 : NEXT I,J                 'errase the level array (A)
