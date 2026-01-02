@@ -1,5 +1,5 @@
 This is a Epson HX-20 version of the game Box World (a Sokoban clone) writen in Microsoft Basic.
-The program code is optimized for size and has been greatly reduced and is difficult to read. If I finished, I upload an god to read version wir comments.
+The program code is optimized for size and has been greatly reduced and is difficult to read. I added an better to read version with comments (BoxWorld-HX20_readable.bas).
 
 This version has the following features:
 * use W-A-S-D as cursor keys instand of the confusing cursor keys of the HX-20

@@ -1,6 +1,6 @@
 10 CLS : WIDTH 20,16 : MEMSET &HB00 : DEFINT A-Z : OPTIONBASE 0 : DIM A(16,16) : DIM B(255,0)
 20 LOCATE 6,0 : PRINT "Box World" : PRINT " by Jeng-Long Jiang"; : GOSUB 460        'print title and play sound (SUB 460)
-30 PRINT"    HX-20 Version" : PRINT "by Sebastian Berger"; : GOSUB460               'print 2nd part of the title and play sound
+30 PRINT "    HX-20 Version" : PRINT "by Sebastian Berger"; : GOSUB460               'print 2nd part of the title and play sound
 40 CLS : PRINT"Controls   ";CHR$(155);"W" : PRINT"      <-A  ";CHR$(156);"S  D->"   'print a helpscreen with the controls
 50 PRINT"R=restart  O=off" : PRINT"P=print level"; : GOSUB460                       '... and play sound again
 60 POKE &H11E,&HA : POKE &H11F,&H40 : RESTORE 480 : FOR I=&HA40 TO &HA6F : READ J : POKE I,J : NEXT I       'changing the custom characters for level items (space, floor, targets, boxes, boxes on targets, walls)
@@ -41,10 +41,22 @@
 410 LOCATE X3,Y3 : PRINT CHR$(224+A(X3,Y3)); : X1=X2 : Y1=Y2 : RETURN               'print a new moved box in front of the new player position; set the new player position X1,X2 and return
 420 GOSUB 460 : L=L+1 : IF L<=33 THEN 80                                            'if the level was completed, increment the level (L); if the last level was not finished goto 80 (load the next level)
 430 CLS : END                                                                       'end the programm
-440 FOR I=0 TO Y STEP 4 : LOCATES 0,I : COPY : NEXT I                               'subroutine to print out the level on the mini printer... scroll throu the hole virtual screen and print each 4 lines
-450 LOCATES 0,Y1-1,0 : GOTO 250                                                     'relocate the screen scrolling to the player position and goto 250 (wait for the next pressed key)
-460 FOR I=1 TO 28 : J=I^2-56*(I^2\56) : SOUND J,1 : NEXTI : RETURN                  'subroutine play a generated melody and return
-470 SOUND1,1 : RETURN                                                               'subroutine play a stuck beep and return
+
+440 FOR I=0 TO Y STEP 4 :                'subroutine to print out the level on the mini printer... scroll throu the hole virtual screen and print each 4 lines
+       LOCATES 0,I : 
+       COPY :                                'this command print the actuale screen
+       NEXT I
+450 LOCATES 0,Y1-1,0 :                   'relocate the screen scrolling to the player position and goto 250 (wait for the next pressed key)
+    GOTO 250
+
+460 FOR I=1 TO 28 :                      'subroutine play a generated melody and return
+       J=I^2-56*(I^2\56) : 
+       SOUND J,1 : 
+       NEXT I : 
+       RETURN
+
+470 SOUND1,1 : RETURN                    'subroutine play a stuck beep and return
+
 480 DATA 0,0,0,0,0,0,0,0,0,0,0,0,0,66,36,24,36,66,0,255,249,189,159,255,0,255,135,195     'binary for the custom characters
 490 DATA 225,255,119,7,119,119,112,119,0,198,40,31,107,136,0,0,0,0,0,0,0,0,0,0,0,0
 500 RESTORE 510:RETURN                                                                    'the set DATA for the first level instruction
