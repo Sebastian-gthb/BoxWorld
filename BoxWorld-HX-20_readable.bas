@@ -1,50 +1,91 @@
-10 CLS : WIDTH 20,16 : MEMSET &HB00 : DEFINT A-Z : OPTIONBASE 0 : DIM A(16,16) : DIM B(255,0)
+10 CLS : 
+   WIDTH 20,16 :                                                       'define the size of the virtual screen
+   MEMSET &HB00 : 
+   DEFINT A-Z :                                                        'init some variables A to Z
+   OPTIONBASE 0 :                                                      'set the optionbase to 0
+   DIM A(16,16) :                                                      'define a array for the level data 16x16 items (used for playing)
+   DIM B(255,0)                                                        'define a array for the level data in a row 255 bytes long (used for decopressing)
+
 20 LOCATE 6,0 : PRINT "Box World" : PRINT " by Jeng-Long Jiang"; : GOSUB 460        'print title and play sound (SUB 460)
-30 PRINT "    HX-20 Version" : PRINT "by Sebastian Berger"; : GOSUB460               'print 2nd part of the title and play sound
+30 PRINT "    HX-20 Version" : PRINT "by Sebastian Berger"; : GOSUB460              'print 2nd part of the title and play sound
+
 40 CLS : PRINT"Controls   ";CHR$(155);"W" : PRINT"      <-A  ";CHR$(156);"S  D->"   'print a helpscreen with the controls
 50 PRINT"R=restart  O=off" : PRINT"P=print level"; : GOSUB460                       '... and play sound again
-60 POKE &H11E,&HA : POKE &H11F,&H40 : RESTORE 480 : FOR I=&HA40 TO &HA6F : READ J : POKE I,J : NEXT I       'changing the custom characters for level items (space, floor, targets, boxes, boxes on targets, walls)
-70 CLS : INPUT "LEVEL  (1-33)";L                                                    'ask for the start level
-80 C=0 : IF L>0 AND L<29 THEN 110                                                   'for the first 28 levels goto line 110
-90 IF L<34 THEN 120                                                                 'for level 29 to 33 goto line 120
-100 SOUND 1,1 : GOTO 70                                                             'is the input out of range the implemented levels play a sound and ask again
+
+60 POKE &H11E,&HA : POKE &H11F,&H40 : RESTORE 480 :                     'changing the custom characters for level items (space, floor, targets, boxes, boxes on targets, walls)
+   FOR I=&HA40 TO &HA6F : 
+      READ J :                                                          'read the data from this file for the custom characters
+      POKE I,J :                                                        'write the data for custom characters in to memory
+      NEXT I
+
+70 CLS : INPUT "LEVEL  (1-33)";L                                        'ask for the start level
+80 C=0 : IF L>0 AND L<29 THEN 110                                       'for the first 28 levels goto line 110
+90 IF L<34 THEN 120                                                     'for level 29 to 33 goto line 120
+100 SOUND 1,1 : GOTO 70                                                 'is the input out of range the implemented levels play a sound and ask again
+
 110 ON L GOSUB 500,520,540,560,580,600,630,650,670,690,710,730,750,770,790,810,830,850,870,890,910,930,950,970,980,1010,1040,1070 : GOTO 130    'select the level data from the corresponding line and overjump the second GOSUB code
-120 M = L-28 : ON M GOSUB 1110,1130,1150,1170,1190                                  'onfor higher level, use this GOSUB to select level data
-130 READ X : READ Y : READ X1 : READ Y1 : FOR J=0 TO 15 : FOR I=0 TO 15 : A(I,J)=0 : NEXT I,J        'load the level header data (size and start position) and errase the level array (A)
-140 B=(X+1)*(Y+1) : Z=0                                                             'B=level size in byte; Z=the level items that are extracted; at the end Z must be B if the level is completly extracted
-150 READ D : IF D>9 THEN D=D-8 : E=5 : GOTO 190                                     'decompress the level; read the next byte of level data; if D>9 the we have multible (D-8 times) walls (E=5 for walls) and goto the loop to extract the E item D times
-160 IF D>7 THEN D=D-6 : E=1 : GOTO 190                                              'if D>7 the we have multible (D-6 times) floor (E=1 for floor) and goto the loop to extract the E item D times
-170 IF D>5 THEN D=D-4 : E=0 : GOTO 190                                              'if D>5 the we have multible (D-4 times) outside space (E=0 for outside space) and goto the loop to extract the E item D times
-180 B(Z,0)=D : Z=Z+1 : GOTO 200                                                     'all other value of D are the items it self one time (0=otside space, 1=floor, 2=target, 3=box, 4=box on target, 5=wall); write it directly to the level array (B) and increment Z
-190 FOR I=1 TO D : B(Z,0)=E : Z=Z+1 : NEXT I                                        'write E item D times in the level array (B) and incremet Z for each item
-200 IF Z<B GOTO 150                                                                 'if the count of items (Z) has not reached the level size (B) loop again and load the next level data byte
-210 Z=0 : A$=INKEY$ : A$=INKEY$ : A$=INKEY$ : A$=INKEY$                             'use Z now as byte counter to draw the level; read 3 times the keyboard buffer to empty some key pressed from the last level end
-220 CLS : FOR J=0 TO Y : LOCATE 0,J : FOR I=0 TO X : A(I,J)=B(Z,0) : Z=Z+1 : IF A(I,J)=3 THEN C=C+1      'draw the hole decompressed level; count the boxes not on target (C)
-230 PRINT CHR$(224+A(I,J)); : NEXT I,J                                              'this is part of this level drawing loop from the line above
-240 LOCATES 0,Y1-1,0 : LOCATE X1,Y1 : PRINT CHR$(154);                              'scroll the screen to the line with the start position (LOCATES...); locate the cursor to the start position; print the player
-250 A$=INPUT$(1) : IF A$="D" THEN X2=X1+1 : X3=X1+2 : Y2=Y1 : Y3=Y1 : GOTO 330      'read the next pressed key; depending on the arrow key, load the x,y value of the next and this next objects in X2 Y2 and X3 Y3 and jump to line 330
-260                IF A$="A" THEN X2=X1-1 : X3=X1-2 : Y2=Y1 : Y3=Y1 : GOTO 330
-270                IF A$="W" THEN Y2=Y1-1 : Y3=Y1-2 : X2=X1 : X3=X1 : GOTO 330
-280                IF A$="S" THEN Y2=Y1+1 : Y3=Y1+2 : X2=X1 : X3=X1 : GOTO 330
-290 IF A$="R" THEN 80                                                               'if R was pressed reload the level
-300 IF A$="P" THEN I=0 : GOTO 440                                                   'if P war pressed set I to zero and jump to the printing routine
-310 IF A$="O" THEN 430                                                              'if O was pressed... end the game
-320 SOUND 1,1 : GOTO 250                                                            'for all other keys play a error beep and read the next pressed key
-330 ON A(X2,Y2) GOSUB 390,390,350,350,470                                           'if the next object in direction walk floor or target goto 390, a box or box on target goto 350, or a wall then goto 470 (stuck beep)
-340 IF C=0 THEN 420 ELSE 250                                                        'check if the level completed (C=all boxes not on target=0) then goto 420 or if not completed goto 250 and wait for the next input
-350 IF A(X3,Y3)>2 THEN 470                                                          'subroutine for box moving... if the object after the box a 3=box, 4=box on target or 5=wall goto 470 (stuck beep)
-360 IF A(X2,Y2)=3 AND A(X3,Y3)=2 THEN C=C-1                                         'if the object in front a box (3) and the object after this a target (2) then decrement C (count of boxes not on target) - the box will move on a target
-370 IF A(X2,Y2)=4 AND A(X3,Y3)=1 THEN C=C+1                                         'if the object in front a box on target (4) and the object after this a flor (1) then increment C (count of boxes not on target) - box will move off a target to floor
-380 A(X3,Y3)=A(X3,Y3)+2 : A(X2,Y2)=A(X2,Y2)-2                                       'in all cases a box will moved (from floor or target to floor or target) decrement the location of the box with 2 and increment the new location with 2
+120 M = L-28 : ON M GOSUB 1110,1130,1150,1170,1190                      'onfor higher level, use this GOSUB to select level data
+
+130 READ X : READ Y : READ X1 : READ Y1 :                               'load the level header data (size and start position)
+    FOR J=0 TO 15 : FOR I=0 TO 15 : A(I,J)=0 : NEXT I,J                 'errase the level array (A)
+140 B=(X+1)*(Y+1) : Z=0                                                 'B=level size in byte; Z=the level items that are extracted; at the end Z must be B if the level is completly extracted
+
+150 READ D : IF D>9 THEN D=D-8 : E=5 : GOTO 190                         'decompress the level; read the next byte of level data; if D>9 the we have multible (D-8 times) walls (E=5 for walls) and goto the loop to extract the E item D times
+160 IF D>7 THEN D=D-6 : E=1 : GOTO 190                                  'if D>7 the we have multible (D-6 times) floor (E=1 for floor) and goto the loop to extract the E item D times
+170 IF D>5 THEN D=D-4 : E=0 : GOTO 190                                  'if D>5 the we have multible (D-4 times) outside space (E=0 for outside space) and goto the loop to extract the E item D times
+180 B(Z,0)=D : Z=Z+1 : GOTO 200                                         'all other value of D are the items it self one time (0=otside space, 1=floor, 2=target, 3=box, 4=box on target, 5=wall); write it directly to the level array (B) and increment Z
+
+190 FOR I=1 TO D : B(Z,0)=E : Z=Z+1 : NEXT I                            'subroutine for write E item D times in the level array (B) and incremet Z for each item
+
+200 IF Z<B GOTO 150                                                     'if the count of items (Z) has not reached the level size (B) loop again and load the next level data byte
+
+210 Z=0 : A$=INKEY$ : A$=INKEY$ : A$=INKEY$ : A$=INKEY$                 'use Z now as byte counter to draw the level; read 3 times the keyboard buffer to empty some key pressed from the last level end
+
+220 CLS :                                                               'draw the hole decompressed level on virtual screen
+    FOR J=0 TO Y : 
+       LOCATE 0,J : 
+       FOR I=0 TO X : 
+          A(I,J)=B(Z,0) : 
+          Z=Z+1 : 
+          IF A(I,J)=3 THEN C=C+1                                        'count the boxes not on target (C)
+230       PRINT CHR$(224+A(I,J)); :
+    NEXT I,J
+
+240 LOCATES 0,Y1-1,0 : LOCATE X1,Y1 : PRINT CHR$(154);                 'scroll the screen to the line with the start position (LOCATES...); locate the cursor to the start position; print the player
+
+250 A$=INPUT$(1) :                                                      'read the next pressed key
+    IF A$="D" THEN X2=X1+1 : X3=X1+2 : Y2=Y1 : Y3=Y1 : GOTO 330         'depending on the arrow key, load the x,y value of the next and this next objects in X2 Y2 and X3 Y3 and jump to line 330
+260 IF A$="A" THEN X2=X1-1 : X3=X1-2 : Y2=Y1 : Y3=Y1 : GOTO 330
+270 IF A$="W" THEN Y2=Y1-1 : Y3=Y1-2 : X2=X1 : X3=X1 : GOTO 330
+280 IF A$="S" THEN Y2=Y1+1 : Y3=Y1+2 : X2=X1 : X3=X1 : GOTO 330
+290 IF A$="R" THEN 80                                                   'if R was pressed reload the level
+300 IF A$="P" THEN I=0 : GOTO 440                                       'if P war pressed set I to zero and jump to the printing routine
+310 IF A$="O" THEN 430                                                  'if O was pressed... end the game
+320 SOUND 1,1 : GOTO 250                                                'for all other keys play a error beep and read the next pressed key
+
+330 ON A(X2,Y2) GOSUB 390,390,350,350,470                               'if the next object in direction walk floor or target goto 390, a box or box on target goto 350, or a wall then goto 470 (stuck beep)
+
+340 IF C=0 THEN 420 ELSE 250                                            'check if the level completed (C=all boxes not on target=0) then goto 420 or if not completed goto 250 and wait for the next input
+
+350 IF A(X3,Y3)>2 THEN 470                                              'subroutine for box moving... if the object after the box a 3=box, 4=box on target or 5=wall goto 470 (stuck beep)
+360 IF A(X2,Y2)=3 AND A(X3,Y3)=2 THEN C=C-1                             'if the object in front a box (3) and the object after this a target (2) then decrement C (count of boxes not on target) - the box will move on a target
+370 IF A(X2,Y2)=4 AND A(X3,Y3)=1 THEN C=C+1                             'if the object in front a box on target (4) and the object after this a flor (1) then increment C (count of boxes not on target) - box will move off a target to floor
+380 A(X3,Y3)=A(X3,Y3)+2 : A(X2,Y2)=A(X2,Y2)-2                           'in all cases a box will moved (from floor or target to floor or target) decrement the location of the box with 2 and increment the new location with 2
+
 390 IF Y1<Y2 THEN LOCATES 0,Y1-1,0                                                  'subroutine for moving player and finish box moving... relocate the screen scrolling
 400 LOCATE X1,Y1 : PRINT CHR$(224+A(X1,Y1)); : LOCATE X2,Y2 : PRINT CHR$(154);      'print the original level item to the old player position; print the new player position
-410 LOCATE X3,Y3 : PRINT CHR$(224+A(X3,Y3)); : X1=X2 : Y1=Y2 : RETURN               'print a new moved box in front of the new player position; set the new player position X1,X2 and return
+410 LOCATE X3,Y3 : PRINT CHR$(224+A(X3,Y3)); :                                      'print a new moved box in front of the new player position
+    X1=X2 :                                                                         'set the new player position X1,Y1 and return
+    Y1=Y2 : 
+    RETURN
+
 420 GOSUB 460 : L=L+1 : IF L<=33 THEN 80                                            'if the level was completed, increment the level (L); if the last level was not finished goto 80 (load the next level)
+
 430 CLS : END                                                                       'end the programm
 
 440 FOR I=0 TO Y STEP 4 :                'subroutine to print out the level on the mini printer... scroll throu the hole virtual screen and print each 4 lines
        LOCATES 0,I : 
-       COPY :                                'this command print the actuale screen
+       COPY :                                'this command print the actuale screen on the mini printer
        NEXT I
 450 LOCATES 0,Y1-1,0 :                   'relocate the screen scrolling to the player position and goto 250 (wait for the next pressed key)
     GOTO 250
@@ -131,4 +172,4 @@
 1190 RESTORE 1200:RETURN
 1200 DATA 13,11,3,7,7,0,14,7,7,11,9,1,11,7,0,5,9,5,3,9,11,6,5,9,3,9,3,3,1,5,6,5,1,3,3,1,5,3,9,1,5,6,10,9,3,9,3,1,15,1,5,3,14,2,2,8,5
 1210 DATA 3,8,5,7,0,5,2,5,2,2,8,3,10,7,0,5,2,2,2,2,3,5,1,5,7,6,5,2,2,2,2,9,5,7,6,17,7,6
-2000 'EOF
+2000 'EOF                'i dont know why but the last line of this file will not be transfered to my HX-20, so i implement this last empty line
